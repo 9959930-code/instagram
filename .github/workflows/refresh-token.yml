@@ -1,0 +1,31 @@
+name: Refresh Instagram token
+
+on:
+  schedule:
+    - cron: "0 0 1,15 * *"   # 1st and 15th of each month, 09:00 KST
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh long-lived token
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          resp=$(curl -sf "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${IG_TOKEN}")
+          new=$(echo "$resp" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+          days=$(echo "$resp" | python3 -c 'import json,sys; print(json.load(sys.stdin)["expires_in"]//86400)')
+          echo "::add-mask::$new"
+          echo "Token refreshed, valid for about ${days} more days"
+          if [ "$new" != "$IG_TOKEN" ]; then
+            if [ -z "${GH_PAT:-}" ]; then
+              echo "::error::Instagram returned a new token string but GH_PAT is not set, so the IG_TOKEN secret could not be updated"
+              exit 1
+            fi
+            echo "$new" | GH_TOKEN="$GH_PAT" gh secret set IG_TOKEN --repo "$GH_REPO"
+            echo "IG_TOKEN secret updated"
+          fi
