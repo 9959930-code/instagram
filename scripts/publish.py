@@ -5,7 +5,7 @@ Layout: posts/<name>/01.jpg..NN.jpg, caption.txt, meta.json
 meta.json: {"publish_at": ISO8601, "status": "approved|published|failed|...", "images": [...], "alt": [...]}
 Images are served by GitHub Pages from this repo. The access token comes from the IG_TOKEN env var.
 """
-import json, os, sys, time, urllib.error, urllib.parse, urllib.request
+import json, os, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -71,6 +71,24 @@ def publish(name, meta):
     return media, api("GET", media, fields="permalink").get("permalink")
 
 
+def git(*args):
+    return subprocess.run(["git", "-C", ROOT, *args]).returncode
+
+
+def claim(name, mp, meta):
+    """Mark the post as publishing and push before posting; the Mac does the same, and only one push can win."""
+    meta.update(status="publishing", claimed_by="github", claimed_at=datetime.now(timezone.utc).isoformat(timespec="seconds"))
+    json.dump(meta, open(mp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    git("add", mp)
+    git("-c", "user.name=github-actions[bot]", "-c", "user.email=41898283+github-actions[bot]@users.noreply.github.com",
+        "commit", "-q", "-m", f"Claim {name} for publishing (github)")
+    if git("push", "-q", "origin", "HEAD:main") != 0:
+        git("reset", "-q", "--hard", "HEAD~1")
+        print(f"SKIP {name}: the Mac claimed it first")
+        return False
+    return True
+
+
 def main():
     if not TOKEN:
         sys.exit("IG_TOKEN is not set")
@@ -82,6 +100,8 @@ def main():
             continue
         meta = json.load(open(mp, encoding="utf-8"))
         if meta.get("status") != "approved" or datetime.fromisoformat(meta["publish_at"]) > now:
+            continue
+        if not claim(name, mp, meta):
             continue
         try:
             media, link = publish(name, meta)

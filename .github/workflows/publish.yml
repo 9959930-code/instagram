@@ -1,8 +1,10 @@
 name: Publish approved Instagram posts
 
 on:
-  # Scheduled runs are off: posting and token refresh now run on the Mac (작업/publish.py via launchd).
-  # Manual run is kept as an emergency backup.
+  # Backup publisher for when the Mac is off. GitHub often runs this hours late; the Mac posts on time when it is on.
+  # Both sides claim a post (status "publishing") with a push before posting, so it is never posted twice.
+  schedule:
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
 
 permissions:
