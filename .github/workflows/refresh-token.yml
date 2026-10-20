@@ -1,8 +1,8 @@
 name: Refresh Instagram token
 
 on:
-  schedule:
-    - cron: "0 0 1,15 * *"   # 1st and 15th of each month, 09:00 KST
+  # Scheduled runs are off: posting and token refresh now run on the Mac (작업/publish.py via launchd).
+  # Manual run is kept as an emergency backup.
   workflow_dispatch:
 
 jobs:

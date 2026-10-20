@@ -1,8 +1,8 @@
 name: Publish approved Instagram posts
 
 on:
-  schedule:
-    - cron: "*/15 * * * *"
+  # Scheduled runs are off: posting and token refresh now run on the Mac (작업/publish.py via launchd).
+  # Manual run is kept as an emergency backup.
   workflow_dispatch:
 
 permissions:
