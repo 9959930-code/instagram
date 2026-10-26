@@ -1,7 +1,7 @@
 {
  "post": "weekly-foliage-events",
  "publish_at": "2026-10-26T08:00:00+09:00",
- "status": "approved",
+ "status": "publishing",
  "images": [
   "01.jpg",
   "02.jpg",
@@ -26,5 +26,7 @@
   "우리 동네 단풍길 찾는 법: 서울시 누리집 우리동네 단풍길 확인, 스마트서울맵, 다산콜센터 120",
   "단풍 보러 갈 사람 태그하고 저장해 두기 안내와 출처"
  ],
- "approved_at": "2026-10-26"
+ "approved_at": "2026-10-26",
+ "claimed_by": "mac",
+ "claimed_at": "2026-10-26T21:30:24"
 }
