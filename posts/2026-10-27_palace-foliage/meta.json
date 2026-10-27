@@ -1,7 +1,7 @@
 {
  "post": "palace-foliage",
  "publish_at": "2026-10-27T12:00:00+09:00",
- "status": "approved",
+ "status": "publishing",
  "images": [
   "01.jpg",
   "02.jpg",
@@ -18,5 +18,7 @@
   "덕수궁, 평소 1,000원 기간 중 무료, 월요일 휴궁, 근처 정동길과 10월 30·31일 정동야행",
   "궁궐 갈 사람 태그하고 저장해 두기 안내와 출처"
  ],
- "approved_at": "2026-10-26"
+ "approved_at": "2026-10-26",
+ "claimed_by": "github",
+ "claimed_at": "2026-10-27T06:47:34+00:00"
 }
